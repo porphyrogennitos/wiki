@@ -9,7 +9,13 @@ def index(request):
     })
 
 def entry(request, title):
-    print(title)
-    return render(request, "encyclopedia/entry.html", {
-        "title": util.get_entry(title)
-    })
+    if util.get_entry(title.capitalize()) is not None:
+        return render(request, "encyclopedia/entry.html", {
+            "title": util.get_entry(title.capitalize())
+        })
+    elif util.get_entry(title.upper()) is not None:
+        return render(request, "encyclopedia/entry.html", {
+            "title": util.get_entry(title.upper())
+        })
+    else:
+        return render(request, "encyclopedia/error.html")
