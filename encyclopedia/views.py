@@ -8,14 +8,16 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def entry(request, title):
-    if util.get_entry(title.capitalize()) is not None:
+def entry(request, entry):
+    if util.get_entry(entry.capitalize()) is not None:
         return render(request, "encyclopedia/entry.html", {
-            "title": util.get_entry(title.capitalize())
+            "entry": util.get_entry(entry.capitalize()),
+            "title": entry.capitalize()
         })
-    elif util.get_entry(title.upper()) is not None:
+    elif util.get_entry(entry.upper()) is not None:
         return render(request, "encyclopedia/entry.html", {
-            "title": util.get_entry(title.upper())
+            "entry": util.get_entry(entry.upper()),
+            "title": entry.upper()
         })
     else:
         return render(request, "encyclopedia/error.html")
