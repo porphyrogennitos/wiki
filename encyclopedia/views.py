@@ -36,3 +36,13 @@ def search(request):
             "entry": util.get_entry(q.upper()),
             "title": q.upper()
         })
+    else:
+        entries = []
+
+        for entry in util.list_entries():
+            if q in entry.lower():
+                entries.append(entry)
+
+        return render(request, "encyclopedia/list.html", {
+            "entries": entries,
+        })
