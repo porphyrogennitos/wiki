@@ -1,13 +1,18 @@
 from django.shortcuts import render
-from django import forms    
+from django import forms
 
 from . import util
+
+class NewPageForm(forms.Form):
+    title = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Title'}))
+    content = forms.CharField(label="", widget=forms.Textarea(attrs={'placeholder': 'Content'}))
 
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
+
 
 def entry(request, entry):
     if util.get_entry(entry.capitalize()) is not None:
@@ -22,6 +27,7 @@ def entry(request, entry):
         })
     else:
         return render(request, "encyclopedia/error.html")
+
 
 def search(request):
     q = request.GET.get("q")
@@ -45,4 +51,11 @@ def search(request):
 
         return render(request, "encyclopedia/list.html", {
             "entries": entries,
+        })
+
+
+def new_page(request):
+    if request.method == 'GET':
+        return render(request, "encyclopedia/new-page.html", {
+            "form": NewPageForm()
         })
