@@ -22,3 +22,27 @@ def entry(request, entry):
         })
     else:
         return render(request, "encyclopedia/error.html")
+
+def search(request):
+    q = request.GET.get("q")
+
+    if util.get_entry(q.capitalize()):
+        return render(request, "encyclopedia/entry.html", {
+            "entry": util.get_entry(q.capitalize()),
+            "title": q.capitalize()
+        })
+    elif util.get_entry(q.upper()):
+        return render(request, "encyclopedia/entry.html", {
+            "entry": util.get_entry(q.upper()),
+            "title": q.upper()
+        })
+    else:
+        entries = []
+
+        for entry in util.list_entries():
+            if q in entry.lower():
+                entries.append(entry)
+
+        return render(request, "encyclopedia/list.html", {
+            "entries": entries,
+        })
