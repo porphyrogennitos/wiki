@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django import forms
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from . import util
 
@@ -25,8 +27,16 @@ def entry(request, entry):
             "entry": util.get_entry(entry.upper()),
             "title": entry.upper()
         })
+    elif util.get_entry(entry):
+        return render(request, "encyclopedia/entry.html", {
+            "entry": util.get_entry(entry),
+            "title": entry
+        })
     else:
-        return render(request, "encyclopedia/error.html")
+        return render(request, "encyclopedia/error.html", {
+            "number": 404,
+            "message": "Not found!"
+        })
 
 
 def search(request):
@@ -55,7 +65,29 @@ def search(request):
 
 
 def new_page(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
+        form = NewPageForm(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+
+            # Check if title exists
+            if util.get_entry(title) is not None:
+                return render(request, "encyclopedia/error.html", {
+                    "number": "",
+                    "message": "This entry already exists"
+                })
+            else:
+                # Save entry
+                util.save_entry(title, content)
+
+                return HttpResponseRedirect(reverse("encyclopedia:entry", args=[title.lower()]))
+        else:
+            return render(request, "encyclopedia/new-page", {
+                "form": NewPageForm
+            })
+    else:
         return render(request, "encyclopedia/new-page.html", {
             "form": NewPageForm()
         })
