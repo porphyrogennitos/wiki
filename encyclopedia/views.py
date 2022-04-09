@@ -9,6 +9,9 @@ class NewPageForm(forms.Form):
     title = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Title'}))
     content = forms.CharField(label="", widget=forms.Textarea(attrs={'placeholder': 'Content'}))
 
+class EditPageForm(forms.Form):
+    content = forms.CharField(label="", widget=forms.Textarea(), initial='')
+
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -91,3 +94,31 @@ def new_page(request):
         return render(request, "encyclopedia/new-page.html", {
             "form": NewPageForm()
         })
+
+
+def edit_page(request, title):
+    # if request.method == 'POST':
+    #     form = EditPageForm(request.POST)
+
+    #     if form.is_valid():
+    #         content = form.cleaned_data["content"]
+
+    #         return "Hello"
+            
+    #     else:
+    #         return render(request, "encyclopedia/edit-page.html", {
+    #             "form": EditPageForm()
+    #         })
+    # else:
+    if util.get_entry(title.capitalize()):
+        return render(request, "encyclopedia/edit-page.html", {
+            "form": EditPageForm(initial={'content': util.get_entry(title.capitalize())})
+        })
+    elif util.get_entry(title.upper()):
+        return render(request, "encyclopedia/edit-page.html", {
+            "form": EditPageForm(initial={'content': util.get_entry(title.upper())})
+         })
+    else:
+        return render(request, "encyclopedia/edit-page.html", {
+            "form": EditPageForm(initial={'content': util.get_entry(title)})
+         })
