@@ -82,7 +82,7 @@ def new_page(request):
                 # Save entry
                 util.save_entry(title, content)
 
-                return HttpResponseRedirect(reverse("encyclopedia:entry", args=[title.lower()]))
+                return HttpResponseRedirect(reverse("encyclopedia:entry", args=[title]))
         else:
             return render(request, "encyclopedia/new-page", {
                 "form": NewPageForm
