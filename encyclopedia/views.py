@@ -97,28 +97,33 @@ def new_page(request):
 
 
 def edit_page(request, title):
-    # if request.method == 'POST':
-    #     form = EditPageForm(request.POST)
+    if request.method == 'POST':
+        form = EditPageForm(request.POST)
 
-    #     if form.is_valid():
-    #         content = form.cleaned_data["content"]
+        if form.is_valid():
+            content = form.cleaned_data["content"]
 
-    #         return "Hello"
-            
-    #     else:
-    #         return render(request, "encyclopedia/edit-page.html", {
-    #             "form": EditPageForm()
-    #         })
-    # else:
-    if util.get_entry(title.capitalize()):
-        return render(request, "encyclopedia/edit-page.html", {
-            "form": EditPageForm(initial={'content': util.get_entry(title.capitalize())})
-        })
-    elif util.get_entry(title.upper()):
-        return render(request, "encyclopedia/edit-page.html", {
-            "form": EditPageForm(initial={'content': util.get_entry(title.upper())})
-         })
+            # Edit content
+            util.save_entry(title, content) 
+
+            return HttpResponseRedirect(reverse("encyclopedia:entry", args=[title.lower()]))
+        else:
+            return render(request, "encyclopedia/edit-page.html", {
+                "form": EditPageForm()
+            })
     else:
-        return render(request, "encyclopedia/edit-page.html", {
-            "form": EditPageForm(initial={'content': util.get_entry(title)})
-         })
+        if util.get_entry(title.capitalize()):
+            return render(request, "encyclopedia/edit-page.html", {
+                "form": EditPageForm(initial={'content': util.get_entry(title.capitalize())}),
+                "title": title
+            })
+        elif util.get_entry(title.upper()):
+            return render(request, "encyclopedia/edit-page.html", {
+                "form": EditPageForm(initial={'content': util.get_entry(title.upper())}),
+                "title": title
+            })
+        else:
+            return render(request, "encyclopedia/edit-page.html", {
+                "form": EditPageForm(initial={'content': util.get_entry(title)}),
+                "title": title
+            })
