@@ -2,12 +2,17 @@ from django.shortcuts import render
 from django import forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import random
 
 from . import util
 
+
 class NewPageForm(forms.Form):
-    title = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Title'}))
-    content = forms.CharField(label="", widget=forms.Textarea(attrs={'placeholder': 'Content'}))
+    title = forms.CharField(label="", widget=forms.TextInput(
+        attrs={'placeholder': 'Title'}))
+    content = forms.CharField(label="", widget=forms.Textarea(
+        attrs={'placeholder': 'Content'}))
+
 
 class EditPageForm(forms.Form):
     content = forms.CharField(label="", widget=forms.Textarea(), initial='')
@@ -104,7 +109,7 @@ def edit_page(request, title):
             content = form.cleaned_data["content"]
 
             # Edit content
-            util.save_entry(title, content) 
+            util.save_entry(title, content)
 
             return HttpResponseRedirect(reverse("encyclopedia:entry", args=[title.lower()]))
         else:
@@ -127,3 +132,13 @@ def edit_page(request, title):
                 "form": EditPageForm(initial={'content': util.get_entry(title)}),
                 "title": title
             })
+
+
+def random_page(request):
+    # Get random entry
+    entry = random.choice(util.list_entries())
+
+    return render(request, "encyclopedia/entry.html", {
+        "title": entry,
+        "entry": util.get_entry(entry)
+    })
