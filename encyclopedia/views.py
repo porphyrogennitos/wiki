@@ -53,12 +53,12 @@ def search(request):
 
     if util.get_entry(q.capitalize()):
         return render(request, "encyclopedia/entry.html", {
-            "entry": util.get_entry(q.capitalize()),
+            "entry": markdown2.markdown(util.get_entry(q.capitalize())),
             "title": q.capitalize()
         })
     elif util.get_entry(q.upper()):
         return render(request, "encyclopedia/entry.html", {
-            "entry": util.get_entry(q.upper()),
+            "entry": markdown2.markdown(util.get_entry(q.upper())),
             "title": q.upper()
         })
     else:
@@ -141,5 +141,5 @@ def random_page(request):
 
     return render(request, "encyclopedia/entry.html", {
         "title": entry,
-        "entry": util.get_entry(entry)
+        "entry": markdown2.markdown(util.get_entry(entry))
     })
