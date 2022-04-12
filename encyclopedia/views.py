@@ -3,7 +3,7 @@ from django import forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 import random
-import re
+import markdown2
 
 from . import util
 
@@ -25,55 +25,20 @@ def index(request):
     })
 
 
-def markdown(entry):
-    a = re.compile(r'(?P<hash>#{1,6}) (?P<heading>\w+)')
-    # b = a.finditer(util.get_entry('Git'))
-    b = a.finditer(entry)
-    print(b)
-    for match in b:
-        if match.group('hash'):
-            if len(match.group('hash')) == 1:
-                entry = f'<h1>{match.group("heading")}</h1>'
-            elif len(match.group('hash')) == 2:
-                entry += f'<h2>{match.group("heading")}</h2>'
-            elif len(match.group('hash')) == 3:
-                entry += f'<h3>{match.group("heading")}</h3>'
-            elif len(match.group('hash')) == 4:
-                entry += f'<h4>{match.group("heading")}</h4>'
-            elif len(match.group('hash')) == 5:
-                entry += f'<h5>{match.group("heading")}</h5>'
-            elif len(match.group('hash')) == 6:
-                entry += f'<h6>{match.group("heading")}</h6>'
-    return entry
-    # print(entry)
-        # entry += f'<h1>{match.group(1)}</h1>'
-        # print(entry)
-        # return entry
-    # b = re.findall(r'# \w+', util.get_entry('Git'))
-    # if b:
-    #     # print('Match found: ', b.group())
-    #     for match in b:
-    #         print(f'<h1>{match}</h1>')
-    # else:
-    #     print('No match')
-
-# markdown(util.get_entry('Git'))
-
-
 def entry(request, entry):
     if util.get_entry(entry.capitalize()) is not None:
         return render(request, "encyclopedia/entry.html", {
-            "entry": markdown(util.get_entry(entry.capitalize())),
+            "entry": markdown2.markdown(util.get_entry(entry.capitalize())),
             "title": entry.capitalize()
         })
     elif util.get_entry(entry.upper()) is not None:
         return render(request, "encyclopedia/entry.html", {
-            "entry": util.get_entry(entry.upper()),
+            "entry": markdown2.markdown(util.get_entry(entry.upper())),
             "title": entry.upper()
         })
     elif util.get_entry(entry):
         return render(request, "encyclopedia/entry.html", {
-            "entry": util.get_entry(entry),
+            "entry": markdown2.markdown(util.get_entry(entry)),
             "title": entry
         })
     else:
